@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShopKart — Amazon Clone</title>
+<style>
+  :root{
+    --nav:#131921;
+    --nav2:#232f3e;
+    --yellow:#febd69;
+    --orange:#f0c14b;
+    --orange-dark:#a88734;
+    --link:#007185;
+    --price-red:#b12704;
+    --bg:#eaeded;
+    --card:#ffffff;
+    --text:#0f1111;
+    --muted:#565959;
+    --border:#d5d9d9;
+    --star:#de7921;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Amazon Ember",Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+  }
+  a{color:var(--link);text-decoration:none}
+  a:hover{text-decoration:underline;color:#c7511f}
+  button{font-family:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid #e77600;outline-offset:2px;border-radius:2px}
+
+  header{background:var(--nav);color:#fff}
+  .head-top{
+    display:flex;align-items:center;gap:6px;
+    padding:6px 12px;max-width:1500px;margin:0 auto;
+  }
+  .logo{
+    font-size:26px;font-weight:700;letter-spacing:-1px;
+    padding:8px;border:1px solid transparent;border-radius:2px;white-space:nowrap;
+    background:none;color:#fff;
+  }
+  .logo span{color:var(--yellow)}
+  .head-item{
+    padding:8px 9px;border:1px solid transparent;border-radius:2px;
+    background:none;color:#fff;line-height:1.2;font-size:14px;text-align:left;
+  }
+  .head-item:hover,.logo:hover{border-color:#fff}
+  .head-item small{display:block;font-size:12px;color:#ccc}
+  .head-item b{font-size:14px}
+
+  .search{flex:1;display:flex;height:40px;border-radius:4px;overflow:hidden;min-width:120px}
+  .search select{
+    background:#e6e6e6;border:none;padding:0 8px;font-size:12px;color:#555;cursor:pointer;
+  }
+  .search input{flex:1;border:none;padding:0 12px;font-size:15px;min-width:0}
+  .search button{
+    background:var(--yellow);border:none;width:45px;font-size:18px;color:#111;
+  }
+  .search button:hover{background:#f3a847}
+
+  .cart-btn{display:flex;align-items:flex-end;gap:2px;position:relative}
+  .cart-icon{font-size:22px;line-height:1}
+  .cart-count{
+    position:absolute;top:-2px;left:18px;color:var(--yellow);
+    font-weight:700;font-size:15px;
+  }
+
+  nav.subnav{
+    background:var(--nav2);display:flex;gap:4px;align-items:center;
+    padding:4px 14px;font-size:14px;overflow-x:auto;
+  }
+  nav.subnav button{
+    background:none;border:1px solid transparent;color:#fff;padding:6px 9px;
+    border-radius:2px;white-space:nowrap;font-size:14px;
+  }
+  nav.subnav button:hover{border-color:#fff}
+  nav.subnav button.active{border-color:#fff;background:rgba(255,255,255,.08)}
+
+  .hero{
+    background:linear-gradient(160deg,#232f3e 0%,#37475a 55%,#485769 100%);
+    color:#fff;padding:36px 20px 90px;text-align:center;
+  }
+  .hero h1{font-size:30px;font-weight:700;margin-bottom:8px}
+  .hero p{color:#dfe3e6;font-size:15px}
+  main{max-width:1500px;margin:0 auto;padding:0 14px 60px}
+  .shelf{margin-top:-60px}
+
+  .row-title{font-size:21px;font-weight:700;margin:26px 0 12px}
+  .grid{
+    display:grid;gap:14px;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  }
+  .card{
+    background:var(--card);border-radius:4px;padding:14px;
+    display:flex;flex-direction:column;
+  }
+  .thumb{
+    height:160px;border-radius:4px;display:grid;place-items:center;
+    font-size:64px;margin-bottom:12px;cursor:pointer;
+  }
+  .card h3{font-size:15px;font-weight:400;line-height:1.35;margin-bottom:6px;cursor:pointer}
+  .card h3:hover{color:#c7511f}
+  .stars{font-size:13px;color:var(--star);margin-bottom:6px}
+  .stars span{color:var(--link);margin-left:5px}
+  .price{font-size:20px;color:var(--price-red);font-weight:500;margin-bottom:2px}
+  .price sup{font-size:12px;top:-7px}
+  .mrp{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .mrp s{color:#565959}
+  .delivery{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .delivery b{color:var(--text)}
+  .btn-add{
+    margin-top:auto;background:var(--orange);border:1px solid var(--orange-dark);
+    border-radius:20px;padding:8px;font-size:14px;color:#111;
+  }
+  .btn-add:hover{background:#f4d078}
+  .badge{
+    display:inline-block;background:#cc0c39;color:#fff;font-size:12px;
+    padding:2px 6px;border-radius:2px;margin-bottom:6px;width:fit-content;
+  }
+
+  .overlay{
+    position:fixed;inset:0;background:rgba(15,17,17,.6);
+    opacity:0;pointer-events:none;transition:opacity .2s;z-index:40;
+  }
+  .overlay.show{opacity:1;pointer-events:auto}
+  .panel{
+    position:fixed;top:0;right:0;height:100%;width:380px;max-width:92vw;
+    background:#fff;z-index:50;transform:translateX(100%);
+    transition:transform .25s ease;display:flex;flex-direction:column;
+  }
+  .panel.open{transform:translateX(0)}
+  .panel-head{
+    padding:14px 16px;border-bottom:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .panel-head h2{font-size:18px}
+  .close{background:none;border:none;font-size:24px;color:var(--muted);line-height:1}
+  .panel-body{flex:1;overflow-y:auto;padding:12px 16px}
+  .line{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee}
+  .line .mini{
+    width:62px;height:62px;border-radius:4px;display:grid;place-items:center;
+    font-size:30px;flex-shrink:0;
+  }
+  .line-info{flex:1;font-size:13px}
+  .line-info p{margin-bottom:4px;line-height:1.3}
+  .qty{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .qty button{
+    width:26px;height:26px;border:1px solid var(--border);background:#f7f8f8;
+    border-radius:4px;font-size:15px;
+  }
+  .qty button:hover{background:#e9ebeb}
+  .rm{background:none;border:none;color:var(--link);font-size:12px;margin-left:6px}
+  .panel-foot{border-top:1px solid var(--border);padding:16px}
+  .total{display:flex;justify-content:space-between;font-size:18px;font-weight:700;margin-bottom:12px}
+  .total b{color:var(--price-red)}
+  .btn-checkout{
+    width:100%;background:var(--orange);border:1px solid var(--orange-dark);
+    border-radius:20px;padding:10px;font-size:15px;
+  }
+  .btn-checkout:hover{background:#f4d078}
+  .btn-checkout:disabled{background:#e7e9ec;border-color:#ccc;color:#888;cursor:not-allowed}
+  .empty{text-align:center;color:var(--muted);padding:50px 10px;font-size:14px}
+  .empty div{font-size:46px;margin-bottom:10px}
+
+  .modal{
+    position:fixed;z-index:50;top:50%;left:50%;transform:translate(-50%,-48%) scale(.97);
+    background:#fff;border-radius:8px;width:760px;max-width:94vw;max-height:88vh;
+    overflow-y:auto;padding:22px;opacity:0;pointer-events:none;transition:.2s;
+  }
+  .modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .modal-grid{display:flex;gap:24px;flex-wrap:wrap}
+  .modal-img{
+    flex:1 1 260px;height:290px;border-radius:6px;display:grid;place-items:center;font-size:120px;
+  }
+  .modal-info{flex:1 1 300px}
+  .modal-info h2{font-size:22px;font-weight:400;margin-bottom:8px}
+  .modal-info .price{font-size:26px}
+  .desc{font-size:14px;line-height:1.6;color:#333;margin:14px 0}
+  .desc li{margin-left:18px;margin-bottom:4px}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:#067d62;color:#fff;padding:12px 20px;border-radius:6px;font-size:14px;
+    opacity:0;transition:.25s;z-index:60;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  footer{background:var(--nav2);color:#ddd;text-align:center;padding:24px;font-size:13px}
+  footer .top{
+    background:#37475a;color:#fff;padding:14px;text-align:center;font-size:14px;cursor:pointer;
+  }
+  @media (max-width:640px){
+    .hide-sm{display:none}
+    .hero h1{font-size:22px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-top">
+    <button class="logo" onclick="showAll()">shop<span>kart</span></button>
+    <button class="head-item hide-sm">
+      <small>Deliver to</small><b>📍 India 110001</b>
+    </button>
+    <div class="search">
+      <select id="cat">
+        <option>All</option>
+      </select>
+      <input id="q" type="text" placeholder="Search ShopKart" oninput="render()">
+      <button onclick="document.getElementById('q').focus()">🔍</button>
+    </div>
+    <button class="head-item hide-sm"><small>Hello, sign in</small><b>Account &amp; Lists</b></button>
+    <button class="head-item hide-sm"><small>Returns</small><b>&amp; Orders</b></button>
+    <button class="head-item cart-btn" onclick="openCart()">
+      <span class="cart-icon">🛒</span>
+      <span class="cart-count" id="count">0</span>
+      <b>Cart</b>
+    </button>
+  </div>
+  <nav class="subnav" id="nav"></nav>
+</header>
+
+<section class="hero">
+  <h1>Big deals on everything you need</h1>
+  <p>Free delivery on orders over ₹499 · Easy 7-day returns</p>
+</section>
+
+<main>
+  <div class="shelf">
+    <h2 class="row-title" id="rowTitle">Today's picks</h2>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="noResult" style="display:none">
+      <span style="display:block;font-size:46px">🔍</span>
+      No results. Try a different search.
+    </p>
+  </div>
+</main>
+
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<aside class="panel" id="cartPanel">
+  <div class="panel-head">
+    <h2>Your Cart</h2>
+    <button class="close" onclick="closeAll()">&times;</button>
+  </div>
+  <div class="panel-body" id="cartBody"></div>
+  <div class="panel-foot">
+    <div class="total"><span>Subtotal</span><b id="total">₹0</b></div>
+    <button class="btn-checkout" id="checkoutBtn" onclick="checkout()">Proceed to checkout</button>
+  </div>
+</aside>
+
+<div class="modal" id="modal"></div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <div class="top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top</div>
+  <p style="padding-top:18px">ShopKart — a practice project built with HTML, CSS &amp; JavaScript.</p>
+</footer>
+
+<script>
+const products = [
+  {id:1,  name:"boAt Rockerz 450 Wireless Headphones",     cat:"Electronics", price:1499, mrp:3990, emoji:"🎧", bg:"#e8f0fe", rating:4.3, reviews:41290, deal:true,
+   desc:["40mm dynamic drivers","Up to 15 hours playback","Bluetooth v5.0","Padded ear cushions"]},
+  {id:2,  name:"Apple iPhone 15 (128 GB, Blue)",           cat:"Electronics", price:65999, mrp:79900, emoji:"📱", bg:"#eef2f7", rating:4.6, reviews:12844, deal:true,
+   desc:["6.1-inch Super Retina XDR","48MP main camera","A16 Bionic chip","USB-C charging"]},
+  {id:3,  name:"HP Victus Gaming Laptop i5 12th Gen",      cat:"Electronics", price:54990, mrp:72000, emoji:"💻", bg:"#f0eef8", rating:4.2, reviews:3120,
+   desc:["16GB RAM, 512GB SSD","RTX 3050 graphics","144Hz display","Windows 11 Home"]},
+  {id:4,  name:"Noise ColorFit Pro 5 Smart Watch",         cat:"Electronics", price:2499, mrp:5999, emoji:"⌚", bg:"#e9f7ef", rating:4.1, reviews:22410,
+   desc:["1.85\" AMOLED display","Bluetooth calling","7-day battery","100+ sport modes"]},
+  {id:5,  name:"Levi's Men's Slim Fit Jeans",              cat:"Fashion", price:1299, mrp:2799, emoji:"👖", bg:"#eef1f6", rating:4.0, reviews:8870,
+   desc:["Stretchable denim","Slim tapered fit","Machine washable","Sizes 28–40"]},
+  {id:6,  name:"Nike Revolution 7 Running Shoes",          cat:"Fashion", price:2795, mrp:4295, emoji:"👟", bg:"#fdeeee", rating:4.4, reviews:15630, deal:true,
+   desc:["Soft foam midsole","Breathable mesh upper","Lightweight build","Everyday running"]},
+  {id:7,  name:"Fastrack Analog Watch for Women",          cat:"Fashion", price:1795, mrp:2995, emoji:"⌚", bg:"#fdf1e6", rating:4.2, reviews:5210,
+   desc:["Stainless steel strap","Water resistant 30m","2-year warranty","Mineral glass dial"]},
+  {id:8,  name:"Prestige 3-Litre Pressure Cooker",         cat:"Home", price:1849, mrp:2695, emoji:"🍲", bg:"#f3f0e8", rating:4.5, reviews:33200,
+   desc:["Hard anodised body","Induction compatible","Metallic safety plug","5-year warranty"]},
+  {id:9,  name:"Milton Thermosteel Flask 1000 ml",         cat:"Home", price:899, mrp:1495, emoji:"🍶", bg:"#eaf3f6", rating:4.4, reviews:19870,
+   desc:["24hr hot, 24hr cold","Stainless steel inner","Leak proof lid","BPA free"]},
+  {id:10, name:"Philips LED Table Lamp",                   cat:"Home", price:1199, mrp:1999, emoji:"💡", bg:"#fbf5e3", rating:4.0, reviews:2340,
+   desc:["3 brightness levels","Eye-care flicker free","Touch control","USB powered"]},
+  {id:11, name:"Atomic Habits — James Clear",              cat:"Books", price:399, mrp:799, emoji:"📚", bg:"#f0f6ef", rating:4.7, reviews:98120, deal:true,
+   desc:["Paperback, 320 pages","Bestselling self-help","English edition","Penguin Random House"]},
+  {id:12, name:"Wings of Fire — A.P.J. Abdul Kalam",       cat:"Books", price:249, mrp:395, emoji:"📖", bg:"#f6f0ea", rating:4.6, reviews:45010,
+   desc:["Autobiography","Paperback, 180 pages","Universities Press","English edition"]},
+  {id:13, name:"LEGO Classic Creative Bricks 500 pcs",     cat:"Toys", price:2799, mrp:3499, emoji:"🧱", bg:"#fdeef2", rating:4.8, reviews:6740,
+   desc:["500 colourful bricks","Ages 4+","Storage box included","Builds imagination"]},
+  {id:14, name:"Funskool Rubik's Cube 3x3",               cat:"Toys", price:349, mrp:599, emoji:"🎲", bg:"#eef4fb", rating:4.3, reviews:11290,
+   desc:["Smooth rotation","Original Rubik's","Ages 8+","Solution guide inside"]},
+  {id:15, name:"Whey Protein Isolate 1 kg — Chocolate",    cat:"Sports", price:2299, mrp:3999, emoji:"🥤", bg:"#f1eef9", rating:4.2, reviews:14520,
+   desc:["25g protein per scoop","Low sugar formula","30 servings","Lab tested"]},
+  {id:16, name:"Cosco Yoga Mat 6 mm Anti-Skid",            cat:"Sports", price:749, mrp:1299, emoji:"🧘", bg:"#eaf6f1", rating:4.1, reviews:7830,
+   desc:["6mm cushioned foam","Anti-skid surface","Carry strap included","173 x 61 cm"]}
+];
+
+const CATEGORIES = ["All", ...new Set(products.map(p => p.cat))];
+let activeCat = "All";
+let cart = [];
+
+try {
+  const saved = localStorage.getItem("shopkart_cart");
+  if (saved) cart = JSON.parse(saved);
+} catch (e) { cart = []; }
+
+function save(){
+  try { localStorage.setItem("shopkart_cart", JSON.stringify(cart)); } catch(e){}
+}
+
+const money = n => "₹" + n.toLocaleString("en-IN");
+const starStr = r => "★".repeat(Math.round(r)) + "☆".repeat(5 - Math.round(r));
+
+function buildNav(){
+  document.getElementById("nav").innerHTML = CATEGORIES.map(c =>
+    `<button class="${c===activeCat?'active':''}" onclick="setCat('${c}')">${c==='All'?'☰ All':c}</button>`
+  ).join("");
+  document.getElementById("cat").innerHTML = CATEGORIES.map(c=>`<option>${c}</option>`).join("");
+}
+function setCat(c){
+  activeCat = c;
+  document.getElementById("cat").value = c;
+  buildNav(); render();
+}
+function showAll(){ document.getElementById("q").value=""; setCat("All"); }
+document.getElementById("cat").addEventListener("change", e => setCat(e.target.value));
+
+function render(){
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const list = products.filter(p =>
+    (activeCat === "All" || p.cat === activeCat) &&
+    (p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q))
+  );
+
+  document.getElementById("rowTitle").textContent =
+    q ? `Results for "${q}"` : (activeCat === "All" ? "Today's picks" : activeCat);
+  document.getElementById("noResult").style.display = list.length ? "none" : "block";
+
+  document.getElementById("grid").innerHTML = list.map(p => `
+    <article class="card">
+      <div class="thumb" style="background:${p.bg}" onclick="openProduct(${p.id})">${p.emoji}</div>
+      ${p.deal ? '<span class="badge">Limited time deal</span>' : ''}
+      <h3 onclick="openProduct(${p.id})">${p.name}</h3>
+      <div class="stars">${starStr(p.rating)} <span>${p.reviews.toLocaleString("en-IN")}</span></div>
+      <div class="price">${money(p.price)}</div>
+      <div class="mrp">M.R.P: <s>${money(p.mrp)}</s> (${Math.round(100-(p.price/p.mrp*100))}% off)</div>
+      <div class="delivery">FREE delivery <b>Fri, 18 Sep</b></div>
+      <button class="btn-add" onclick="addToCart(${p.id})">Add to Cart</button>
+    </article>`).join("");
+}
+
+function openProduct(id){
+  const p = products.find(x => x.id === id);
+  document.getElementById("modal").innerHTML = `
+    <div style="text-align:right"><button class="close" onclick="closeAll()">&times;</button></div>
+    <div class="modal-grid">
+      <div class="modal-img" style="background:${p.bg}">${p.emoji}</div>
+      <div class="modal-info">
+        <h2>${p.name}</h2>
+        <div class="stars">${starStr(p.rating)} <span>${p.reviews.toLocaleString("en-IN")} ratings</span></div>
+        <hr style="margin:10px 0;border:none;border-top:1px solid #e3e3e3">
+        <div class="price">${money(p.price)}</div>
+        <div class="mrp">M.R.P: <s>${money(p.mrp)}</s> — you save ${money(p.mrp-p.price)}</div>
+        <div class="delivery" style="margin-top:8px">FREE delivery <b>Fri, 18 Sep</b> · In stock</div>
+        <ul class="desc">${p.desc.map(d=>`<li>${d}</li>`).join("")}</ul>
+        <button class="btn-add" style="width:100%" onclick="addToCart(${p.id});closeAll()">Add to Cart</button>
+      </div>
+    </div>`;
+  document.getElementById("modal").classList.add("open");
+  document.getElementById("overlay").classList.add("show");
+}
+
+function addToCart(id){
+  const line = cart.find(l => l.id === id);
+  if (line) line.qty++;
+  else cart.push({ id, qty: 1 });
+  save(); updateCart();
+  toast("Added to cart");
+}
+function changeQty(id, delta){
+  const line = cart.find(l => l.id === id);
+  if (!line) return;
+  line.qty += delta;
+  if (line.qty <= 0) cart = cart.filter(l => l.id !== id);
+  save(); updateCart();
+}
+function removeLine(id){
+  cart = cart.filter(l => l.id !== id);
+  save(); updateCart();
+}
+function updateCart(){
+  const items = cart.map(l => ({ ...products.find(p => p.id === l.id), qty: l.qty }));
+  const totalQty = items.reduce((s, i) => s + i.qty, 0);
+  const totalAmt = items.reduce((s, i) => s + i.price * i.qty, 0);
+
+  document.getElementById("count").textContent = totalQty;
+  document.getElementById("total").textContent = money(totalAmt);
+  document.getElementById("checkoutBtn").disabled = totalQty === 0;
+
+  document.getElementById("cartBody").innerHTML = items.length ? items.map(i => `
+    <div class="line">
+      <div class="mini" style="background:${i.bg}">${i.emoji}</div>
+      <div class="line-info">
+        <p>${i.name}</p>
+        <div class="price" style="font-size:15px">${money(i.price * i.qty)}</div>
+        <div class="qty">
+          <button onclick="changeQty(${i.id},-1)">−</button>
+          <span>${i.qty}</span>
+          <button onclick="changeQty(${i.id},1)">+</button>
+          <button class="rm" onclick="removeLine(${i.id})">Delete</button>
+        </div>
+      </div>
+    </div>`).join("")
+    : `<div class="empty"><div>🛒</div>Your cart is empty.<br>Add something you like.</div>`;
+}
+function openCart(){
+  document.getElementById("cartPanel").classList.add("open");
+  document.getElementById("overlay").classList.add("show");
+}
+function closeAll(){
+  document.getElementById("cartPanel").classList.remove("open");
+  document.getElementById("modal").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+}
+function checkout(){
+  const n = cart.reduce((s, l) => s + l.qty, 0);
+  cart = []; save(); updateCart(); closeAll();
+  toast(`Order placed — ${n} item${n>1?'s':''} on the way`);
+}
+
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeAll(); });
+
+buildNav();
+render();
+updateCart();
+</script>
+</body>
+</html>
